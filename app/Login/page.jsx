@@ -51,6 +51,9 @@ export default function Login() {
       // ✅ Set login ONLY after success
       localStorage.setItem("user", "true")
 
+      // Dispatch custom event to update navbar
+      window.dispatchEvent(new Event("userLoggedIn"))
+
       setSuccess("Login successful! Redirecting...")
 
       setTimeout(() => {

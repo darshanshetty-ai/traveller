@@ -54,6 +54,9 @@ export default function SignupPage() {
       // ✅ Only login after success
       localStorage.setItem("user", "true")
 
+      // Dispatch custom event to update navbar
+      window.dispatchEvent(new Event("userLoggedIn"))
+
       setSuccess("Account created successfully! Redirecting...")
 
       setTimeout(() => {

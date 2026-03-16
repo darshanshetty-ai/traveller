@@ -12,6 +12,24 @@ export default function Navbar() {
         if (typeof window !== "undefined") {
             setIsLogged(!!localStorage.getItem("user"))
         }
+
+        // Listen for storage changes
+        const handleStorageChange = () => {
+            setIsLogged(!!localStorage.getItem("user"))
+        }
+
+        // Listen for custom login event
+        const handleUserLoggedIn = () => {
+            setIsLogged(true)
+        }
+
+        window.addEventListener("storage", handleStorageChange)
+        window.addEventListener("userLoggedIn", handleUserLoggedIn)
+        
+        return () => {
+            window.removeEventListener("storage", handleStorageChange)
+            window.removeEventListener("userLoggedIn", handleUserLoggedIn)
+        }
     }, [])
 
     const handleLogout = async () => {
@@ -22,6 +40,8 @@ export default function Navbar() {
             // Clear localStorage
             localStorage.removeItem("user")
             setIsLogged(false)
+            // Dispatch custom event to update navbar
+            window.dispatchEvent(new Event("userLoggedOut"))
             // Redirect to home page
             router.push("/")
         } catch (error) {
