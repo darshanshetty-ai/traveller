@@ -13,6 +13,8 @@ export default function UploadPage() {
         location: "",
         category: "",
         description: "",
+        best_time: "",
+        entry_fee: "",
     });
 
     const [image, setImage] = useState(null);
@@ -38,11 +40,24 @@ export default function UploadPage() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        // --- Client-side validation ---
+        if (!formData.best_time.trim()) {
+            alert("Best Time to Visit is required.");
+            return;
+        }
+        const fee = parseFloat(formData.entry_fee);
+        if (formData.entry_fee === "" || isNaN(fee) || fee < 0) {
+            alert("Entry Fee must be a non-negative number.");
+            return;
+        }
+
         const data = new FormData();
         data.append("place_name", formData.place_name);
         data.append("location", formData.location);
         data.append("category", formData.category);
         data.append("description", formData.description);
+        data.append("best_time", formData.best_time.trim());
+        data.append("entry_fee", fee);
         data.append("image", image);
 
         try {
@@ -51,13 +66,16 @@ export default function UploadPage() {
                 body: data,
             });
 
-            if (!res.ok) throw new Error("Upload failed");
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                throw new Error(errData.error || "Upload failed");
+            }
 
             setSubmitted(true);
             window.scrollTo(0, 0);
         } catch (error) {
             console.error(error);
-            alert("Something went wrong");
+            alert(error.message || "Something went wrong");
         }
     };
 
@@ -137,6 +155,28 @@ export default function UploadPage() {
                         rows="4"
                         placeholder="Description"
                         value={formData.description}
+                        onChange={handleChange}
+                        required
+                        className="w-full border border-border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                    />
+
+                    {/* NEW: Best Time to Visit */}
+                    <input
+                        type="text"
+                        name="best_time"
+                        placeholder="Best Time to Visit (e.g. Oct - Feb)"
+                        value={formData.best_time}
+                        onChange={handleChange}
+                        required
+                        className="w-full border border-border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                    />
+
+                    {/* NEW: Entry Fees */}
+                    <input
+                        type="number"
+                        name="entry_fee"
+                        placeholder="Entry Fee (in ₹)"
+                        value={formData.entry_fee}
                         onChange={handleChange}
                         required
                         className="w-full border border-border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"

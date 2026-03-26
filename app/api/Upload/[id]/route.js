@@ -29,7 +29,7 @@ export async function PUT(req, { params }) {
     }
 
     const body = await req.json()
-    const { place_name, location, category, description, image_url, status } = body
+    const { place_name, location, category, description, image_url, status, best_time, entry_fee } = body
 
     // Build dynamic update query based on what fields are provided
     const updates = []
@@ -64,6 +64,29 @@ export async function PUT(req, { params }) {
     if (status !== undefined) {
       updates.push(`status = $${paramIndex}`)
       values.push(status)
+      paramIndex++
+    }
+    if (best_time !== undefined) {
+      if (typeof best_time !== "string" || best_time.trim() === "") {
+        return NextResponse.json(
+          { error: "best_time must be a non-empty string." },
+          { status: 400 }
+        )
+      }
+      updates.push(`best_time = $${paramIndex}`)
+      values.push(best_time.trim())
+      paramIndex++
+    }
+    if (entry_fee !== undefined) {
+      const fee = parseFloat(entry_fee)
+      if (isNaN(fee) || fee < 0) {
+        return NextResponse.json(
+          { error: "entry_fee must be a non-negative number." },
+          { status: 400 }
+        )
+      }
+      updates.push(`entry_fee = $${paramIndex}`)
+      values.push(fee)
       paramIndex++
     }
 
