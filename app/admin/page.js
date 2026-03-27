@@ -30,24 +30,34 @@ export default function AdminPage() {
     const handleAction = useCallback(async (id, action) => {
         const newStatus = action === "approve" ? "Approved" : "Rejected"
 
-        await fetch(`/api/Upload/${id}`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ status: newStatus })
-        })
+        try {
+            const res = await fetch(`/api/Upload/${id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ status: newStatus })
+            })
 
-        if (action === "approve") {
-            setApprovedCount(prev => prev + 1)
-        }
+            const payload = await res.json().catch(() => ({}))
+            if (!res.ok) {
+                throw new Error(payload?.error || "Failed to update status")
+            }
 
-        // Update status instead of removing row
-        setPlaces(prev =>
-            prev.map(place =>
-                place.id === id ? { ...place, status: newStatus } : place
+            if (action === "approve") {
+                setApprovedCount(prev => prev + 1)
+            }
+
+            // Update from DB response (source of truth)
+            setPlaces(prev =>
+                prev.map(place =>
+                    place.id === id ? { ...place, ...payload } : place
+                )
             )
-        )
+        } catch (error) {
+            console.error(error)
+            alert(error.message || "Failed to update place status")
+        }
 
     }, [])
 
@@ -102,7 +112,7 @@ export default function AdminPage() {
                         <div>
                             <p className="text-xs text-muted">Approved</p>
                             <p className="text-2xl font-semibold text-green-600">
-                                {places.filter(p => p.status === "Approved").length}
+                                {places.filter(p => String(p?.status ?? "").toLowerCase() === "approved").length}
                             </p>
                         </div>
                         <div className="bg-green-100 text-green-600 p-2 rounded-lg">
@@ -117,7 +127,7 @@ export default function AdminPage() {
                         <div>
                             <p className="text-xs text-muted">Pending</p>
                             <p className="text-2xl font-semibold text-yellow-500">
-                                {places.filter(p => p.status === "Pending").length}
+                                {places.filter(p => String(p?.status ?? "").toLowerCase() === "pending").length}
                             </p>
                         </div>
                         <div className="bg-yellow-100 text-yellow-600 p-2 rounded-lg">
@@ -187,9 +197,9 @@ export default function AdminPage() {
                                             <div className="flex justify-center">
                                                 <span
                                                     className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wide
-                        ${place.status === "Approved"
+                        ${String(place?.status ?? "").toLowerCase() === "approved"
                                                             ? "bg-green-100 text-green-700 border border-green-300"
-                                                            : place.status === "Rejected"
+                                                            : String(place?.status ?? "").toLowerCase() === "rejected"
                                                                 ? "bg-red-100 text-red-700 border border-red-300"
                                                                 : "bg-yellow-100 text-yellow-800 border border-yellow-300"
                                                         }`}
@@ -206,7 +216,7 @@ export default function AdminPage() {
                                                     onClick={() => handleAction(place.id, "approve")}
                                                     variant="success"
                                                     size="sm"
-                                                    disabled={place.status === "Approved"}
+                                                    disabled={String(place?.status ?? "").toLowerCase() === "approved"}
                                                     className="hover:shadow-md transition-shadow"
                                                 >
                                                     ✓ Approve
@@ -216,7 +226,7 @@ export default function AdminPage() {
                                                     onClick={() => handleAction(place.id, "reject")}
                                                     variant="outline"
                                                     size="sm"
-                                                    disabled={place.status === "Rejected"}
+                                                    disabled={String(place?.status ?? "").toLowerCase() === "rejected"}
                                                     className="hover:shadow-md transition-shadow"
                                                 >
                                                     ✕ Reject

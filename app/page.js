@@ -16,7 +16,9 @@ export default function Home() {
         const data = await res.json();
 
         // Filter for approved places and take first 4
-        const approved = data.filter(place => place.status === "Approved").slice(0, 4);
+        const approved = (data || [])
+          .filter((place) => String(place?.status ?? "").toLowerCase() === "approved")
+          .slice(0, 4);
         setFeaturedPlaces(approved);
       } catch (error) {
         console.error("Failed to fetch featured places:", error);

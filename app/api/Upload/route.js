@@ -41,7 +41,10 @@ export async function POST(req) {
     }
 
     if (!image) {
-      return NextResponse.json({ message: "Image is required" }, { status: 400 })
+      return NextResponse.json({ error: "image is required." }, { status: 400 })
+    }
+    if (typeof image.arrayBuffer !== "function" || !image.name) {
+      return NextResponse.json({ error: "image must be a valid file." }, { status: 400 })
     }
 
     // Convert file to buffer
@@ -52,9 +55,11 @@ export async function POST(req) {
     const fileName = `${Date.now()}-${image.name}`
 
     // Upload path
-    const uploadPath = path.join(process.cwd(), "public/uploads", fileName)
+    const uploadDir = path.join(process.cwd(), "public/uploads")
+    const uploadPath = path.join(uploadDir, fileName)
 
     // Save file
+    await fs.mkdir(uploadDir, { recursive: true })
     await fs.writeFile(uploadPath, buffer)
 
     // URL to store in DB

@@ -18,9 +18,10 @@ export default function PlacesPage() {
                 const data = await res.json();
 
                 // Show only approved places
-                const approved = data.filter(
-                    (place) => place.status === "Approved"
-                );
+                const approved = (data || []).filter((place) => {
+                    const status = String(place?.status ?? "").toLowerCase();
+                    return status === "approved";
+                });
 
                 setPlaces(approved);
                 setFilteredPlaces(approved);
