@@ -1,14 +1,21 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import PlaceCard from "@/components/PlaceCard";
 import Button from "@/components/ui/Button";
 import { Search } from "lucide-react";
 
 export default function PlacesPage() {
+    const searchParams = useSearchParams();
     const [places, setPlaces] = useState([]);
     const [filteredPlaces, setFilteredPlaces] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
+
+    useEffect(() => {
+        const query = searchParams?.get("search")?.trim() || "";
+        setSearchTerm(query);
+    }, [searchParams]);
 
     // Fetch places from API
     useEffect(() => {
