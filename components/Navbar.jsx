@@ -74,6 +74,7 @@ export default function Navbar() {
                             <NavLink href="/">Home</NavLink>
                             <NavLink href="/places">Destinations</NavLink>
                             <NavLink href="/upload">Share Place</NavLink>
+                            <NavLink href="/About">About</NavLink>
                         </div>
 
                         {/* Sign up / Logout Button */}

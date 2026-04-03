@@ -16,6 +16,10 @@ export async function GET(req, { params }) {
       [id]
     )
 
+    if (result.rows.length === 0) {
+      return NextResponse.json({ error: "Place not found" }, { status: 404 })
+    }
+
     return NextResponse.json(result.rows[0])
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 })

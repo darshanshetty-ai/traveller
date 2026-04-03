@@ -176,6 +176,7 @@ export default function UploadPage() {
                         type="number"
                         name="entry_fee"
                         placeholder="Entry Fee (in ₹)"
+                        step="0.01"
                         value={formData.entry_fee}
                         onChange={handleChange}
                         required
