@@ -1,38 +1,38 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import Button from "@/components/ui/Button"
+import Link from "next/link";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Button from "@/components/ui/Button";
 
 export default function SignupPage() {
-  const router = useRouter()
+  const router = useRouter();
 
   const [formData, setFormData] = useState({
     username: "",
     email: "",
     password: "",
-  })
+  });
 
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
-  const [success, setSuccess] = useState("")
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   // Handle input change
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
-    })
-    setError("")
-  }
+    });
+    setError("");
+  };
 
   // Handle form submit
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    setError("")
-    setSuccess("")
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    setSuccess("");
 
     try {
       const response = await fetch("/api/signup", {
@@ -41,34 +41,33 @@ export default function SignupPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
-      })
+      });
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (!response.ok) {
-        setError(data.message || "Signup failed")
-        setLoading(false)
-        return
+        setError(data.message || "Signup failed");
+        setLoading(false);
+        return;
       }
 
       // ✅ Only login after success
-      localStorage.setItem("user", "true")
+      localStorage.setItem("user", "true");
 
       // Dispatch custom event to update navbar
-      window.dispatchEvent(new Event("userLoggedIn"))
+      window.dispatchEvent(new Event("userLoggedIn"));
 
-      setSuccess("Account created successfully! Redirecting...")
+      setSuccess("Account created successfully! Redirecting...");
 
       setTimeout(() => {
-        router.push("/")
-      }, 1500)
-
+        router.push("/");
+      }, 1500);
     } catch (err) {
-      setError("An error occurred. Please try again.")
-      console.error(err)
-      setLoading(false)
+      setError("An error occurred. Please try again.");
+      console.error(err);
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-primary/10 px-4">
@@ -90,7 +89,6 @@ export default function SignupPage() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-5">
-
           <input
             type="text"
             name="username"
@@ -133,12 +131,14 @@ export default function SignupPage() {
             {loading ? "Creating Account..." : "Sign Up"}
           </Button>
 
-          <Link href="/Login" className="block text-center text-primary hover:underline mt-2 text-sm">
+          <Link
+            href="/Login"
+            className="block text-center text-primary hover:underline mt-2 text-sm"
+          >
             Already have an account? Login
           </Link>
-
         </form>
       </div>
     </div>
-  )
+  );
 }
