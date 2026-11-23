@@ -1,35 +1,35 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
-import Button from "@/components/ui/Button"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import Button from "@/components/ui/Button";
 
 export default function Login() {
-  const router = useRouter()
+  const router = useRouter();
 
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-  })
+  });
 
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
-  const [success, setSuccess] = useState("")
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
-    })
-    setError("")
-  }
+    });
+    setError("");
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    setError("")
-    setSuccess("")
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    setSuccess("");
 
     try {
       const response = await fetch("/api/login", {
@@ -38,34 +38,33 @@ export default function Login() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
-      })
+      });
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (!response.ok) {
-        setError(data.message || "Login failed")
-        setLoading(false)
-        return
+        setError(data.message || "Login failed");
+        setLoading(false);
+        return;
       }
 
       // ✅ Set login ONLY after success
-      localStorage.setItem("user", "true")
+      localStorage.setItem("user", "true");
 
       // Dispatch custom event to update navbar
-      window.dispatchEvent(new Event("userLoggedIn"))
+      window.dispatchEvent(new Event("userLoggedIn"));
 
-      setSuccess("Login successful! Redirecting...")
+      setSuccess("Login successful! Redirecting...");
 
       setTimeout(() => {
-        router.push("/")
-      }, 1500)
-
+        router.push("/");
+      }, 1500);
     } catch (err) {
-      setError("An error occurred. Please try again.")
-      console.error(err)
-      setLoading(false)
+      setError("An error occurred. Please try again.");
+      console.error(err);
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-primary/10 px-4">
@@ -87,7 +86,6 @@ export default function Login() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-5">
-
           <input
             type="email"
             name="email"
@@ -118,17 +116,18 @@ export default function Login() {
           >
             {loading ? "Logging in..." : "Login"}
           </Button>
-
         </form>
 
         <p className="text-center text-sm text-muted mt-4">
           Don't have an account?{" "}
-          <Link href="/Signup" className="font-semibold text-primary hover:underline">
+          <Link
+            href="/Signup"
+            className="font-semibold text-primary hover:underline"
+          >
             Sign Up
           </Link>
         </p>
-
       </div>
     </div>
-  )
+  );
 }

@@ -17,7 +17,9 @@ export default function Home() {
 
         // Filter for approved places and take first 4
         const approved = (data || [])
-          .filter((place) => String(place?.status ?? "").toLowerCase() === "approved")
+          .filter(
+            (place) => String(place?.status ?? "").toLowerCase() === "approved",
+          )
           .slice(0, 4);
         setFeaturedPlaces(approved);
       } catch (error) {
@@ -42,23 +44,31 @@ export default function Home() {
             </h2>
             <div className="h-1 w-24 bg-secondary mx-auto rounded-full"></div>
             <p className="text-muted text-lg max-w-2xl mx-auto">
-              Check out some of the most popular and breathtaking destinations curated just for you.
+              Check out some of the most popular and breathtaking destinations
+              curated just for you.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {loading ? (
               // Loading skeleton
-              Array(4).fill(0).map((_, i) => (
-                <div key={i} className="bg-gray-200 rounded-2xl h-80 animate-pulse"></div>
-              ))
+              Array(4)
+                .fill(0)
+                .map((_, i) => (
+                  <div
+                    key={i}
+                    className="bg-gray-200 rounded-2xl h-80 animate-pulse"
+                  ></div>
+                ))
             ) : featuredPlaces.length > 0 ? (
               featuredPlaces.map((place) => (
                 <PlaceCard key={place.id} place={place} />
               ))
             ) : (
               <div className="col-span-full text-center py-12">
-                <p className="text-muted text-lg">No approved places available yet</p>
+                <p className="text-muted text-lg">
+                  No approved places available yet
+                </p>
               </div>
             )}
           </div>
@@ -76,9 +86,12 @@ export default function Home() {
       {/* Optional: Newsletter or another section to fill space */}
       <section className="py-20 bg-primary/5">
         <div className="max-w-4xl mx-auto text-center px-4">
-          <h2 className="text-3xl font-bold mb-6 text-foreground">Planning a Trip?</h2>
+          <h2 className="text-3xl font-bold mb-6 text-foreground">
+            Planning a Trip?
+          </h2>
           <p className="text-muted mb-8 text-lg">
-            Share your favorite destination with our community and help others discover amazing places.
+            Share your favorite destination with our community and help others
+            discover amazing places.
           </p>
           <a href="/upload">
             <Button variant="primary" size="lg">
